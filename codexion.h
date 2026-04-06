@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/06 12:01:16 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/06 13:33:01 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 typedef struct s_Coder
 {
 	int					id;
-	long long			last_compile_start;
+	long long			last_compile_time;
 	int					compiles_done;
 	pthread_mutex_t		*left_dongle;
 	pthread_mutex_t		*right_dongle;
@@ -52,5 +52,6 @@ int		parser(int ac, char **av);
 int		check_arg_chars(char *arg);
 long	string_to_long_safe(char *arg, int *error);
 int		parse_scheduler(char *av);
+int		init_all(t_data	*data, char **av);
 
 #endif
