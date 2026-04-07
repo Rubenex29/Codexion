@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:20:38 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/06 11:58:19 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/07 09:32:07 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int	parser(int ac, char **av)
 {
 	int	i;
-	int	nbr;
 	int	error;
 
 	error = 0;
@@ -24,7 +23,7 @@ int	parser(int ac, char **av)
 	{
 		if (!check_arg_chars(av[i]))
 			return (0);
-		nbr = string_to_long_safe(av[i], &error);
+		string_to_long_safe(av[i], &error);
 		if (error)
 			return (0);
 		i++;

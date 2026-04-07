@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 12:32:33 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/06 13:35:38 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/07 16:26:32 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ static int	init_coders(t_data *data)
 
 	i = 0;
 	data->coders = malloc(sizeof(t_coder) * data->num_coders);
-	if (!data->coders)
+	data->thread_ids = malloc(sizeof(pthread_t) * data->num_coders);
+	if (!data->coders || !data->thread_ids)
 		return (0);
 	while (i < data->num_coders)
 	{
@@ -71,6 +72,12 @@ static int	init_coders(t_data *data)
 		i++;
 	}
 	return (1);
+}
+
+void	init_compile_mutex(t_coder *coder)
+{
+	pthread_mutex_init(&coder->last_compile_mutex, NULL);
+	pthread_mutex_init(&coder->compiles_mutex, NULL);
 }
 
 int	init_all(t_data	*data, char **av)

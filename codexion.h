@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/06 13:33:01 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/07 16:49:21 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,15 @@
 # include <stdio.h>
 # include <string.h>
 # include <sys/time.h>
+# include <unistd.h>
 
 typedef struct s_Coder
 {
 	int					id;
 	long long			last_compile_time;
 	int					compiles_done;
+	pthread_mutex_t		last_compile_mutex;
+	pthread_mutex_t		compiles_mutex;
 	pthread_mutex_t		*left_dongle;
 	pthread_mutex_t		*right_dongle;
 	struct s_data		*data;
@@ -48,10 +51,24 @@ typedef struct s_data
 	pthread_mutex_t		*dongles;
 }	t_data;
 
-int		parser(int ac, char **av);
-int		check_arg_chars(char *arg);
-long	string_to_long_safe(char *arg, int *error);
-int		parse_scheduler(char *av);
-int		init_all(t_data	*data, char **av);
+int			parser(int ac, char **av);
+int			check_arg_chars(char *arg);
+long		string_to_long_safe(char *arg, int *error);
+int			parse_scheduler(char *av);
+int			init_all(t_data	*data, char **av);
+void		init_compile_mutex(t_coder *coder);
+void		*coder_routine(void *arg);
+void		create_thread(t_data *data);
+long long	get_time_in_ms(void);
+void		ft_usleep(long long time_in_ms);
+void		write_status(char *msg, t_coder *coder);
+int			check_sim_stop(t_coder *coder);
+void		compile(t_coder *coder);
+void		debug(t_coder *coder);
+void		refactor(t_coder *coder);
+void		*monitor_routine(void *arg);
+void		stop_mutex(t_data *data);
+void		compile_mutex(t_coder *coder);
+int			get_stop_mutex(t_data *data);
 
 #endif
