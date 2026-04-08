@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 11:53:18 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:16:21 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@
 # include <sys/time.h>
 # include <unistd.h>
 
+typedef struct s_dongle
+{
+	pthread_mutex_t	mutex;
+	long			last_use;
+}	t_dongle;
+
 typedef struct s_Coder
 {
 	int					id;
@@ -28,10 +34,9 @@ typedef struct s_Coder
 	int					compiles_done;
 	pthread_mutex_t		last_compile_mutex;
 	pthread_mutex_t		compiles_mutex;
-	pthread_mutex_t		*left_dongle;
-	pthread_mutex_t		*right_dongle;
+	t_dongle			*left_dongle;
+	t_dongle			*right_dongle;
 	struct s_data		*data;
-	struct s_dongle		*dongles;
 }	t_coder;
 
 typedef struct s_data
@@ -49,7 +54,7 @@ typedef struct s_data
 	pthread_t			*thread_ids;
 	struct s_Coder		*coders;			
 	pthread_mutex_t		log_mutex;
-	pthread_mutex_t		*dongles;
+	t_dongle			*dongles;
 }	t_data;
 
 int			parser(int ac, char **av);
@@ -71,11 +76,5 @@ void		*monitor_routine(void *arg);
 void		stop_mutex(t_data *data);
 void		compile_mutex(t_coder *coder);
 int			get_stop_mutex(t_data *data);
-
-typedef struct s_dongle
-{
-	pthread_mutex_t mutex;
-	long long last_use;
-}	t_dongle;
 
 #endif

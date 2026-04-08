@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:24:21 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/07 16:15:07 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:43:50 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,11 @@ void	write_status(char *msg, t_coder *coder)
 {
 	long long	now;
 
-	if (coder->data->simulation_stop)
-		return ;
 	pthread_mutex_lock(&coder->data->log_mutex);
-	now = get_time_in_ms() - coder->data->start_time;
-	printf("%lld %d %s\n", now, coder->id, msg);
+	if (!coder->data->simulation_stop)
+	{
+		now = get_time_in_ms() - coder->data->start_time;
+		printf("%lld %d %s\n", now, coder->id, msg);
+	}
 	pthread_mutex_unlock(&coder->data->log_mutex);
 }

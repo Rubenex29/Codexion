@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 12:32:33 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 11:59:40 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:16:37 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,41 +34,45 @@ static void	init_data(t_data *data, char **av)
 	data->start_time = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-static int	init_dongles(t_data *data)
+static t_dongle	*init_dongles(int num_coders)
 {
-	int	i;
+	t_dongle	*dongles;
+	int			i;
 
+	dongles = malloc(sizeof(t_dongle) * num_coders);
+	if (!dongles)
+		return (NULL);
 	i = 0;
-	data->dongles = malloc(sizeof(pthread_mutex_t) * data->num_coders);
-	if (!data->dongles)
-		return (0);
-	while (i < data->num_coders)
+	while (i < num_coders)
 	{
-		pthread_mutex_init(&data->dongles[i], NULL);
+		pthread_mutex_init(&dongles[i].mutex, NULL);
+		dongles[i].last_use = 0;
 		i++;
 	}
-	pthread_mutex_init(&data->log_mutex, NULL);
-	return (1);
+	return (dongles);
 }
 
 static int	init_coders(t_data *data)
 {
 	int	i;
 
-	i = 0;
 	data->coders = malloc(sizeof(t_coder) * data->num_coders);
 	data->thread_ids = malloc(sizeof(pthread_t) * data->num_coders);
-	if (!data->coders || !data->thread_ids)
+	data->dongles = init_dongles(data->num_coders);
+	if (!data->coders || !data->thread_ids || !data->dongles)
 		return (0);
+	i = 0;
 	while (i < data->num_coders)
 	{
 		data->coders[i].id = i + 1;
 		data->coders[i].left_dongle = &data->dongles[i];
-		data->coders[i].right_dongle = &data->dongles
-		[(i + 1) % data->num_coders];
+		data->coders[i].right_dongle = &data->dongles[
+			(i + 1) % data->num_coders];
 		data->coders[i].data = data;
 		data->coders[i].last_compile_time = data->start_time;
 		data->coders[i].compiles_done = 0;
+		pthread_mutex_init(&data->coders[i].last_compile_mutex, NULL);
+		pthread_mutex_init(&data->coders[i].compiles_mutex, NULL);
 		i++;
 	}
 	return (1);
@@ -83,8 +87,6 @@ void	init_compile_mutex(t_coder *coder)
 int	init_all(t_data	*data, char **av)
 {
 	init_data(data, av);
-	if (!init_dongles(data))
-		return (0);
 	if (!init_coders(data))
 		return (0);
 	return (1);

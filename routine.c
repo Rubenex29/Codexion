@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 09:45:14 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 12:00:19 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 15:39:18 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,10 @@ void	*coder_routine(void *arg)
 	coder = (t_coder *)arg;
 	if (coder->data->num_coders == 1)
 	{
-		pthread_mutex_lock(coder->right_dongle);
+		pthread_mutex_lock(&coder->right_dongle->mutex);
 		write_status("has taken a dongle", coder);
 		ft_usleep(coder->data->time_to_burnout);
-		pthread_mutex_unlock(coder->right_dongle);
+		pthread_mutex_unlock(&coder->right_dongle->mutex);
 		write_status("burned out", coder);
 		return (NULL);
 	}
@@ -63,8 +63,8 @@ static int	should_stop_monitor(t_data *data, int i, long long last)
 {
 	if (get_time_in_ms() - last > data->time_to_burnout)
 	{
-		write_status("burned out", &data->coders[i]);
 		stop_mutex(data);
+		write_status("burned out", &data->coders[i]);
 		return (1);
 	}
 	if (data->coders[i].compiles_done >= data->compiles_required)
