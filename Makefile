@@ -1,7 +1,7 @@
 NAME = codexion
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -pthread
 
 SRCS = codexion.c \
 	parser.c \

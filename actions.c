@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 12:13:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/07 16:47:44 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 11:45:37 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,14 @@ void	compile(t_coder *coder)
 		pthread_mutex_lock(coder->right_dongle);
 		write_status("has taken a dongle", coder);
 	}
+	compile_mutex(coder);
 	write_status("is compiling", coder);
 	ft_usleep(coder->data->time_to_compile);
 	pthread_mutex_unlock(coder->left_dongle);
 	pthread_mutex_unlock(coder->right_dongle);
-	compile_mutex(coder);
+	pthread_mutex_lock(&coder->compiles_mutex);
+	coder->compiles_done++;
+	pthread_mutex_unlock(&coder->compiles_mutex);
 }
 
 void	debug(t_coder *coder)
@@ -45,31 +48,4 @@ void	refactor(t_coder *coder)
 {
 	write_status("is refactoring", coder);
 	ft_usleep(coder->data->time_to_refactor);
-}
-
-void *monitor_routine(void *arg)
-{
-    t_data *data = (t_data *)arg;
-    int i;
-
-    while (!get_stop_mutex(data))
-    {
-        i = 0;
-        while (i < data->num_coders)
-        {
-            pthread_mutex_lock(&data->coders[i].last_compile_mutex);
-            long long last = data->coders[i].last_compile_time;
-            pthread_mutex_unlock(&data->coders[i].last_compile_mutex);
-
-            if (get_time_in_ms() - last > data->time_to_burnout)
-            {
-                write_status("burned out", &data->coders[i]);
-                stop_mutex(data);
-                return NULL;
-            }
-            i++;
-        }
-        usleep(1000);
-    }
-    return NULL;
 }

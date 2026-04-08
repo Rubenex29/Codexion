@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/07 16:49:21 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/08 11:53:18 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_Coder
 	pthread_mutex_t		*left_dongle;
 	pthread_mutex_t		*right_dongle;
 	struct s_data		*data;
+	struct s_dongle		*dongles;
 }	t_coder;
 
 typedef struct s_data
@@ -70,5 +71,11 @@ void		*monitor_routine(void *arg);
 void		stop_mutex(t_data *data);
 void		compile_mutex(t_coder *coder);
 int			get_stop_mutex(t_data *data);
+
+typedef struct s_dongle
+{
+	pthread_mutex_t mutex;
+	long long last_use;
+}	t_dongle;
 
 #endif
