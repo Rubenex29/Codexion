@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 14:16:21 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/09 11:58:33 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct s_data
 	pthread_t			*thread_ids;
 	struct s_Coder		*coders;			
 	pthread_mutex_t		log_mutex;
+	pthread_mutex_t		stop_mutex;
 	t_dongle			*dongles;
 }	t_data;
 
@@ -67,7 +68,7 @@ void		*coder_routine(void *arg);
 void		create_thread(t_data *data);
 long long	get_time_in_ms(void);
 void		ft_usleep(long long time_in_ms);
-void		write_status(char *msg, t_coder *coder);
+void		write_status(const char *msg, t_coder *coder);
 int			check_sim_stop(t_coder *coder);
 void		compile(t_coder *coder);
 void		debug(t_coder *coder);
@@ -76,5 +77,6 @@ void		*monitor_routine(void *arg);
 void		stop_mutex(t_data *data);
 void		compile_mutex(t_coder *coder);
 int			get_stop_mutex(t_data *data);
+int			all_coders_completed(t_data *data);
 
 #endif

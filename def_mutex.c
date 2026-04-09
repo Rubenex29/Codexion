@@ -6,27 +6,17 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:15:09 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 10:55:59 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/09 10:04:10 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	check_sim_stop(t_coder *coder)
-{
-	int	status;
-
-	pthread_mutex_lock(&coder->data->log_mutex);
-	status = coder->data->simulation_stop;
-	pthread_mutex_unlock(&coder->data->log_mutex);
-	return (status);
-}
-
 void	stop_mutex(t_data *data)
 {
-	pthread_mutex_lock(&data->log_mutex);
+	pthread_mutex_lock(&data->stop_mutex);
 	data->simulation_stop = 1;
-	pthread_mutex_unlock(&data->log_mutex);
+	pthread_mutex_unlock(&data->stop_mutex);
 }
 
 void	compile_mutex(t_coder *coder)
@@ -41,8 +31,8 @@ int	get_stop_mutex(t_data *data)
 {
 	int	stop;
 
-	pthread_mutex_lock(&data->log_mutex);
+	pthread_mutex_lock(&data->stop_mutex);
 	stop = data->simulation_stop;
-	pthread_mutex_unlock(&data->log_mutex);
+	pthread_mutex_unlock(&data->stop_mutex);
 	return (stop);
 }

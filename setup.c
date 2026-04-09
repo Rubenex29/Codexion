@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 12:32:33 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/08 14:16:37 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:05:40 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ void	init_compile_mutex(t_coder *coder)
 int	init_all(t_data	*data, char **av)
 {
 	init_data(data, av);
+	pthread_mutex_init(&data->log_mutex, NULL);
+	pthread_mutex_init(&data->stop_mutex, NULL);
 	if (!init_coders(data))
 		return (0);
 	return (1);
