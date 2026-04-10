@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/09 11:58:33 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/10 11:55:14 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,14 @@
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
+
+typedef struct s_fifo
+{
+	pthread_mutex_t	mtx;
+	pthread_cond_t	cond;
+	unsigned long	next_ticket;
+	unsigned long	serving_ticket;
+}	t_fifo;
 
 typedef struct s_dongle
 {
@@ -52,9 +60,10 @@ typedef struct s_data
 	long long			start_time;
 	int					simulation_stop;
 	pthread_t			*thread_ids;
-	struct s_Coder		*coders;			
+	struct s_Coder		*coders;
 	pthread_mutex_t		log_mutex;
 	pthread_mutex_t		stop_mutex;
+	t_fifo				waiting_fifo;
 	t_dongle			*dongles;
 }	t_data;
 
@@ -78,5 +87,7 @@ void		stop_mutex(t_data *data);
 void		compile_mutex(t_coder *coder);
 int			get_stop_mutex(t_data *data);
 int			all_coders_completed(t_data *data);
+void		fifo_lock(t_fifo *f);
+void		fifo_unlock(t_fifo *f);
 
 #endif

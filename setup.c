@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 12:32:33 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/09 12:05:40 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/10 11:55:16 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static void	init_data(t_data *data, char **av)
 	data->time_to_refactor = (int)string_to_long_safe(av[5], &error);
 	data->compiles_required = (int)string_to_long_safe(av[6], &error);
 	data->dongle_cooldown = (int)string_to_long_safe(av[7], &error);
+	pthread_mutex_init(&data->log_mutex, NULL);
+	pthread_mutex_init(&data->stop_mutex, NULL);
 	if (strcmp(av[8], "fifo") == 0)
 		data->scheduler_type = 0;
 	else
@@ -78,17 +80,19 @@ static int	init_coders(t_data *data)
 	return (1);
 }
 
-void	init_compile_mutex(t_coder *coder)
+static void	init_fifo(t_fifo *fifo)
 {
-	pthread_mutex_init(&coder->last_compile_mutex, NULL);
-	pthread_mutex_init(&coder->compiles_mutex, NULL);
+	pthread_mutex_init(&fifo->mtx, NULL);
+	pthread_cond_init(&fifo->cond, NULL);
+	fifo->next_ticket = 0;
+	fifo->serving_ticket = 0;
 }
 
 int	init_all(t_data	*data, char **av)
 {
 	init_data(data, av);
-	pthread_mutex_init(&data->log_mutex, NULL);
-	pthread_mutex_init(&data->stop_mutex, NULL);
+	if (data->scheduler_type == 0)
+		init_fifo(&data->waiting_fifo);
 	if (!init_coders(data))
 		return (0);
 	return (1);

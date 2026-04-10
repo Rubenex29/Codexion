@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:15:09 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/09 10:04:10 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/10 11:01:39 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void	stop_mutex(t_data *data)
 
 void	compile_mutex(t_coder *coder)
 {
-	init_compile_mutex(coder);
+	pthread_mutex_init(&coder->last_compile_mutex, NULL);
+	pthread_mutex_init(&coder->compiles_mutex, NULL);
 	pthread_mutex_lock(&coder->last_compile_mutex);
 	coder->last_compile_time = get_time_in_ms();
 	pthread_mutex_unlock(&coder->last_compile_mutex);

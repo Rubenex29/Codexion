@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 09:45:14 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/09 11:55:31 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/10 12:12:03 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,25 @@ void	create_thread(t_data *data)
 	pthread_join(monitor, NULL);
 }
 
+static int	run_cycle(t_coder *coder)
+{
+	int	use_fifo;
+
+	use_fifo = (coder->data->scheduler_type == 0);
+	if (use_fifo)
+		fifo_lock(&coder->data->waiting_fifo);
+	if (run_step(coder, compile) || run_step(coder, debug)
+		|| run_step(coder, refactor))
+	{
+		if (use_fifo)
+			fifo_unlock(&coder->data->waiting_fifo);
+		return (1);
+	}
+	if (use_fifo)
+		fifo_unlock(&coder->data->waiting_fifo);
+	return (0);
+}
+
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
@@ -62,52 +81,8 @@ void	*coder_routine(void *arg)
 		usleep(1000);
 	while (!get_stop_mutex(coder->data))
 	{
-		if (run_step(coder, compile))
+		if (run_cycle(coder))
 			break ;
-		if (run_step(coder, debug))
-			break ;
-		if (run_step(coder, refactor))
-			break ;
-	}
-	return (NULL);
-}
-
-static int	should_stop_monitor(t_data *data, int i, long long last)
-{
-	if (get_time_in_ms() - last > data->time_to_burnout)
-	{
-		write_status("burned out", &data->coders[i]);
-		stop_mutex(data);
-		return (1);
-	}
-	return (0);
-}
-
-void	*monitor_routine(void *arg)
-{
-	t_data			*data;
-	int				i;
-	long long		last;
-
-	data = (t_data *)arg;
-	while (!get_stop_mutex(data))
-	{
-		i = 0;
-		while (i < data->num_coders)
-		{
-			pthread_mutex_lock(&data->coders[i].last_compile_mutex);
-			last = data->coders[i].last_compile_time;
-			pthread_mutex_unlock(&data->coders[i].last_compile_mutex);
-			if (should_stop_monitor(data, i, last))
-				return (NULL);
-			i++;
-		}
-		if (all_coders_completed(data))
-		{
-			stop_mutex(data);
-			return (NULL);
-		}
-		usleep(1000);
 	}
 	return (NULL);
 }

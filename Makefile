@@ -8,8 +8,10 @@ SRCS = codexion.c \
 	setup.c \
 	utils.c \
 	routine.c \
+	monitor.c \
 	actions.c \
-	def_mutex.c
+	def_mutex.c \
+	fifo.c
 
 OBJS = $(SRCS:.c=.o)
 HEADER = codexion.h
