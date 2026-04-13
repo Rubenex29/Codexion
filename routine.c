@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 09:45:14 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/10 12:12:03 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/13 14:17:35 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,19 +47,26 @@ void	create_thread(t_data *data)
 static int	run_cycle(t_coder *coder)
 {
 	int	use_fifo;
+	int	has_dongles;
 
+	if (all_coders_completed(coder->data))
+		return (1);
 	use_fifo = (coder->data->scheduler_type == 0);
 	if (use_fifo)
 		fifo_lock(&coder->data->waiting_fifo);
-	if (run_step(coder, compile) || run_step(coder, debug)
-		|| run_step(coder, refactor))
+	if (all_coders_completed(coder->data))
 	{
 		if (use_fifo)
 			fifo_unlock(&coder->data->waiting_fifo);
 		return (1);
 	}
+	has_dongles = take_compile_dongles(coder);
 	if (use_fifo)
 		fifo_unlock(&coder->data->waiting_fifo);
+	if (!has_dongles)
+		return (1);
+	if (run_step(coder, compile) || run_step(coder, debug) || run_step(coder, refactor))
+		return (1);
 	return (0);
 }
 
@@ -74,12 +81,11 @@ void	*coder_routine(void *arg)
 		write_status("has taken a dongle", coder);
 		ft_usleep(coder->data->time_to_burnout);
 		pthread_mutex_unlock(&coder->right_dongle->mutex);
-		write_status("burned out", coder);
 		return (NULL);
 	}
 	if (coder->id % 2 == 0)
 		usleep(1000);
-	while (!get_stop_mutex(coder->data))
+	while (!get_stop_mutex(coder->data) && !all_coders_completed(coder->data))
 	{
 		if (run_cycle(coder))
 			break ;

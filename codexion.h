@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/10 11:55:14 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/13 12:53:00 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,6 @@ int			get_stop_mutex(t_data *data);
 int			all_coders_completed(t_data *data);
 void		fifo_lock(t_fifo *f);
 void		fifo_unlock(t_fifo *f);
+int			take_compile_dongles(t_coder *coder);
 
 #endif

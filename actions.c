@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 12:13:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/09 15:14:04 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/13 13:18:08 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	take_dongle(t_coder *coder, t_dongle *dongle)
 	}
 }
 
-static int	take_compile_dongles(t_coder *coder)
+int	take_compile_dongles(t_coder *coder)
 {
 	if (coder->id % 2 == 0)
 	{
@@ -67,8 +67,6 @@ void	compile(t_coder *coder)
 {
 	long long	now;
 
-	if (!take_compile_dongles(coder))
-		return ;
 	pthread_mutex_lock(&coder->last_compile_mutex);
 	coder->last_compile_time = get_time_in_ms();
 	pthread_mutex_unlock(&coder->last_compile_mutex);
