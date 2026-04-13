@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/13 12:53:00 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:19:42 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ typedef struct s_Coder
 {
 	int					id;
 	long long			last_compile_time;
+	int					deadline;
+	int					closest_to_burnout;
 	int					compiles_done;
 	pthread_mutex_t		last_compile_mutex;
 	pthread_mutex_t		compiles_mutex;

@@ -6,11 +6,41 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 09:45:14 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/13 14:17:35 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:23:41 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+static int	is_closest_to_burnout(t_coder *coder)
+{
+	t_data		*data;
+	long long	deadline;
+	long long	best_deadline;
+	int		best_id;
+	int		i;
+
+	data = coder->data;
+	best_deadline = LLONG_MAX;
+	best_id = INT_MAX;
+	i = 0;
+	while (i < data->num_coders)
+	{
+		pthread_mutex_lock(&data->coders[i].last_compile_mutex);
+		deadline = data->coders[i].last_compile_time + data->time_to_burnout;
+		pthread_mutex_unlock(&data->coders[i].last_compile_mutex);
+		if (deadline < best_deadline
+			|| (deadline == best_deadline && data->coders[i].id < best_id))
+		{
+			best_deadline = deadline;
+			best_id = data->coders[i].id;
+		}
+		i++;
+	}
+	if (coder->id == best_id)
+		return (1);
+	return (0);
+}
 
 static int	run_step(t_coder *coder, void (*action)(t_coder *))
 {
@@ -54,6 +84,14 @@ static int	run_cycle(t_coder *coder)
 	use_fifo = (coder->data->scheduler_type == 0);
 	if (use_fifo)
 		fifo_lock(&coder->data->waiting_fifo);
+	else
+	{
+		if (!is_closest_to_burnout(coder))
+		{
+			usleep(500);
+			return (0);
+		}
+	}
 	if (all_coders_completed(coder->data))
 	{
 		if (use_fifo)
@@ -65,7 +103,8 @@ static int	run_cycle(t_coder *coder)
 		fifo_unlock(&coder->data->waiting_fifo);
 	if (!has_dongles)
 		return (1);
-	if (run_step(coder, compile) || run_step(coder, debug) || run_step(coder, refactor))
+	if (run_step(coder, compile) || run_step(coder, debug)
+		|| run_step(coder, refactor))
 		return (1);
 	return (0);
 }
