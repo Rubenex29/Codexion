@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:00:24 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/13 16:19:42 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/14 11:08:42 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ typedef struct s_Coder
 {
 	int					id;
 	long long			last_compile_time;
-	int					deadline;
-	int					closest_to_burnout;
 	int					compiles_done;
 	pthread_mutex_t		last_compile_mutex;
 	pthread_mutex_t		compiles_mutex;
@@ -69,28 +67,49 @@ typedef struct s_data
 	t_dongle			*dongles;
 }	t_data;
 
+/* parser.c */
 int			parser(int ac, char **av);
 int			check_arg_chars(char *arg);
 long		string_to_long_safe(char *arg, int *error);
 int			parse_scheduler(char *av);
+
+/* setup.c */
 int			init_all(t_data	*data, char **av);
-void		init_compile_mutex(t_coder *coder);
+
+/* cleanup.c */
+void		cleanup_data(t_data *data);
+
+/* routine.c */
 void		*coder_routine(void *arg);
 void		create_thread(t_data *data);
-long long	get_time_in_ms(void);
-void		ft_usleep(long long time_in_ms);
-void		write_status(const char *msg, t_coder *coder);
-int			check_sim_stop(t_coder *coder);
+
+/* edf.c */
+int			is_closest_to_burnout(t_coder *coder, t_data *data);
+
+/* actions.c */
 void		compile(t_coder *coder);
 void		debug(t_coder *coder);
 void		refactor(t_coder *coder);
+int			take_compile_dongles(t_coder *coder);
+
+/* monitor.c */
 void		*monitor_routine(void *arg);
+
+/* def_mutex.c */
 void		stop_mutex(t_data *data);
 void		compile_mutex(t_coder *coder);
 int			get_stop_mutex(t_data *data);
+void		init_compile_mutex(t_coder *coder);
+
+/* utils.c */
+long long	get_time_in_ms(void);
+void		ft_usleep(long long time_in_ms);
+void		write_status(const char *msg, t_coder *coder);
 int			all_coders_completed(t_data *data);
+int			check_sim_stop(t_coder *coder);
+
+/* fifo.c */
 void		fifo_lock(t_fifo *f);
 void		fifo_unlock(t_fifo *f);
-int			take_compile_dongles(t_coder *coder);
 
 #endif

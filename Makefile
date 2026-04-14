@@ -6,8 +6,10 @@ CFLAGS = -Wall -Wextra -Werror -pthread
 SRCS = codexion.c \
 	parser.c \
 	setup.c \
+	cleanup.c \
 	utils.c \
 	routine.c \
+	edf.c \
 	monitor.c \
 	actions.c \
 	def_mutex.c \

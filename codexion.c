@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:05:30 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/10 11:55:15 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/14 11:08:40 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@ int	main(int ac, char **av)
 		return (1);
 	memset(&data, 0, sizeof(t_data));
 	if (!init_all(&data, av))
+	{
+		cleanup_data(&data);
 		return (1);
+	}
 	create_thread(&data);
+	cleanup_data(&data);
 	return (0);
 }

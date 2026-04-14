@@ -6,7 +6,7 @@
 /*   By: rumontei <rumontei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 12:32:33 by rumontei          #+#    #+#             */
-/*   Updated: 2026/04/13 16:19:59 by rumontei         ###   ########.fr       */
+/*   Updated: 2026/04/14 10:26:09 by rumontei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,6 @@ static int	init_coders(t_data *data)
 		data->coders[i].data = data;
 		data->coders[i].last_compile_time = data->start_time;
 		data->coders[i].compiles_done = 0;
-		data->coders[i].closest_to_burnout = 0;
-		data->coders[i].deadline = 0;
 		pthread_mutex_init(&data->coders[i].last_compile_mutex, NULL);
 		pthread_mutex_init(&data->coders[i].compiles_mutex, NULL);
 		i++;
